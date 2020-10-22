@@ -390,6 +390,15 @@ jobs:
             git push -u origin nightly
       - slack/status:
           fail_only: true
+
+  run_unit_tests:
+    <<: *defaults
+    steps:
+      - <<: *load_workspace
+      - run:
+          name: validate modules
+          command: npx karma start test/unit-tests-karma/karma-conf.js
+
 workflows:
   version: 2
   build_and_test:
@@ -410,6 +419,8 @@ workflows:
           filters:
             tags:
               only: /^v\d+(?:\.\d+)+?$/
+      - run_unit_tests:
+          requires: [lint]
       - visual_comparison_with_master:
           requires: [lint]
           filters:
